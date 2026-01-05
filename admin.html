@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Machine Rental Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #f5f7fa; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        header { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; padding: 1.5rem 0; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0; }
+        .stat-card { background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+        .stat-number { font-size: 2.5em; font-weight: bold; color: #ff6b6b; }
+        .stat-label { color: #666; margin-top: 5px; }
+        
+        .search-box { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); margin-bottom: 30px; }
+        .search-input { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 10px; font-size: 16px; }
+        
+        .machines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 25px; }
+        .machine-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s; border-left: 5px solid #ddd; }
+        .machine-card.pending { border-left-color: #ffc107; }
+        .machine-card.approved { border-left-color: #28a745; }
+        .machine-card.rejected { border-left-color: #dc3545; }
+        .machine-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        
+        .machine-header { padding: 25px; background: #f8f9fa; display: flex; justify-content: space-between; align-items: center; }
+        .machine-title { font-size: 22px; font-weight: bold; color: #333; }
+        .status-badge { padding: 8px 16px; border-radius: 25px; font-weight: bold; font-size: 12px; text-transform: uppercase; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-approved { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+        
+        .machine-body { padding: 25px; }
+        .machine-price { font-size: 28px; font-weight: bold; color: #ff6b6b; margin-bottom: 15px; }
+        .machine-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .detail { background: #f0f2f5; padding: 12px; border-radius: 10px; text-align: center; }
+        .detail strong { display: block; color: #333; font-size: 14px; }
+        .owner-info { background: #e9ecef; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; }
+        
+        .action-buttons { display: flex; gap: 10px; padding-top: 20px; border-top: 1px solid #eee; }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 14px; }
+        .btn-approve { background: #28a745; color: white; flex: 1; }
+        .btn-approve:hover { background: #218838; }
+        .btn-reject { background: #dc3545; color: white; flex: 1; }
+        .btn-reject:hover { background: #c82333; }
+        .btn-view { background: #007bff; color: white; flex: 0 0 auto; }
+        .btn-view:hover { background: #0056b3; }
+        
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 40px; }
+        .page-btn { padding: 12px 20px; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .page-btn.active, .page-btn:hover { background: #ff6b6b; color: white; border-color: #ff6b6b; }
+        
+        .no-machines { text-align: center; padding: 60px 20px; color: #666; }
+        .login-form { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .login-input { width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #eee; border-radius: 10px; font-size: 16px; }
+        .login-btn { width: 100%; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; padding: 15px; border: none; border-radius: 10px; font-size: 18px; cursor: pointer; }
+        
+        @media (max-width: 768px) {
+            .machines-grid { grid-template-columns: 1fr; }
+            .action-buttons { flex-direction: column; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- COMMON NAVBAR -->
+<nav style="background: linear-gradient(135deg, #2d5a27 0%, #4a7c59 100%); padding: 1rem; display: flex; justify-content: space-around; color: white;">
+  <a href="/" style="color: white; text-decoration: none; font-weight: bold;">🏠 Home</a>
+  <a href="/index.html" style="color: white; text-decoration: none;">📍 Map</a>
+  <a href="/signup.html" style="color: white; text-decoration: none;">📝 Signup</a>
+  <a href="/login.html" style="color: white; text-decoration: none;">🔐 Login</a>
+  <a href="/owner.html" style="color: white; text-decoration: none;">👨‍🌾 Owner</a>
+  <a href="/admin.html" style="color: white; text-decoration: none;">⚙️ Admin</a>
+</nav>
+
+
+    <div id="loginScreen" class="login-form">
+        <h2>🔐 Admin Login</h2>
+        <form id="loginForm">
+            <input type="password" id="adminPassword" class="login-input" placeholder="Enter admin password" required>
+            <button type="submit" class="login-btn">Login to Dashboard</button>
+        </form>
+    </div>
+
+    <div id="adminDashboard" style="display: none;">
+        <header>
+            <div class="container">
+                <h1>⚙️ Admin Dashboard - Machine Verification</h1>
+                <p>Review and approve machine listings before going live</p>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalMachines">0</div>
+                    <div class="stat-label">Total Machines</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingMachines">0</div>
+                    <div class="stat-label">Pending Review</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="approvedMachines">0</div>
+                    <div class="stat-label">Approved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="rejectedMachines">0</div>
+                    <div class="stat-label">Rejected</div>
+                </div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search machines by name, owner, or type...">
+            </div>
+
+            <div id="machinesContainer" class="machines-grid">
+                <div class="no-machines">
+                    <h3>📭 No machines pending review</h3>
+                    <p>Pending machine registrations will appear here for verification.</p>
+                </div>
+            </div>
+
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <script>
+        // Demo admin password: "admin123"
+        const ADMIN_PASSWORD = "admin123";
+        let allMachines = [];
+        let filteredMachines = [];
+        let currentPage = 1;
+        const machinesPerPage = 8;
+
+        // Load machines from localStorage (shared with main page)
+        function loadMachines() {
+            const saved = localStorage.getItem('rentalMachines') || '[]';
+            allMachines = JSON.parse(saved);
+            filteredMachines = [...allMachines];
+            updateStats();
+            displayMachines();
+        }
+
+        function updateStats() {
+            document.getElementById('totalMachines').textContent = allMachines.length;
+            document.getElementById('pendingMachines').textContent = allMachines.filter(m => m.status === 'pending').length;
+            document.getElementById('approvedMachines').textContent = allMachines.filter(m => m.status === 'approved').length;
+            document.getElementById('rejectedMachines').textContent = allMachines.filter(m => m.status === 'rejected').length;
+        }
+
+        function displayMachines() {
+            const container = document.getElementById('machinesContainer');
+            const startIndex = (currentPage - 1) * machinesPerPage;
+            const endIndex = startIndex + machinesPerPage;
+            const pageMachines = filteredMachines.slice(startIndex, endIndex);
+
+            if (pageMachines.length === 0) {
+                container.innerHTML = `
+                    <div class="no-machines">
+                        <h3>🔍 No machines match your search</h3>
+                        <p>Try adjusting your search terms.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = pageMachines.map((machine, index) => {
+                const globalIndex = startIndex + index;
+                const statusClass = machine.status || 'pending';
+                const statusText = machine.status === 'approved' ? 'Approved' : 
+                                  machine.status === 'rejected' ? 'Rejected' : 'Pending';
+                
+                return `
+                    <div class="machine-card ${statusClass}" data-machine-id="${machine.id}">
+                        <div class="machine-header">
+                            <div class="machine-title">${machine.name}</div>
+                            <span class="status-badge status-${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="machine-body">
+                            <div class="machine-price">₹${machine.price}/day</div>
+                            <div class="machine-details">
+                                <div class="detail"><strong>${machine.type}</strong></div>
+                                <div class="detail"><strong>${machine.year}</strong></div>
+                                <div class="detail"><strong>${machine.condition}</strong></div>
+                            </div>
+                            <p>${machine.description}</p>
+                            <div class="owner-info">
+                                <strong>Owner:</strong> ${machine.owner}<br>
+                                <strong>Added:</strong> ${machine.added}
+                            </div>
+                            <div class="action-buttons">
+                                ${statusClass !== 'approved' ? 
+                                    `<button class="btn btn-approve" onclick="updateStatus(${machine.id}, 'approved')">✅ Approve</button>` : 
+                                    `<button class="btn btn-view" onclick="viewMachine(${machine.id})">👁️ View</button>`
+                                }
+                                ${statusClass !== 'rejected' ? 
+                                    `<button class="btn btn-reject" onclick="updateStatus(${machine.id}, 'rejected')">❌ Reject</button>` : 
+                                    `<button class="btn btn-view" onclick="viewMachine(${machine.id})">👁️ View</button>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updatePagination();
+        }
+
+        function updateStatus(machineId, status) {
+            const machine = allMachines.find(m => m.id === machineId);
+            if (machine) {
+                machine.status = status;
+                localStorage.setItem('rentalMachines', JSON.stringify(allMachines));
+                loadMachines();
+                showNotification(`${machine.name} has been ${status}.`);
+            }
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredMachines.length / machinesPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let pagesHtml = '';
+            for (let i = 1; i <= totalPages; i++) {
+                pagesHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            pagination.innerHTML = pagesHtml;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            displayMachines();
+        }
+
+        function showNotification(message) {
+            // Simple notification (can be enhanced with toast library)
+            alert(message);
+        }
+
+        // Event Listeners
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                loadMachines();
+            } else {
+                alert('❌ Invalid password!');
+            }
+        });
+
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            filteredMachines = allMachines.filter(machine => 
+                machine.name.toLowerCase().includes(query) ||
+                machine.owner.toLowerCase().includes(query) ||
+                machine.type.toLowerCase().includes(query) ||
+                machine.description.toLowerCase().includes(query)
+            );
+            currentPage = 1;
+            displayMachines();
+        });
+
+        function viewMachine(id) {
+            const machine = allMachines.find(m => m.id === id);
+            if (machine) {
+                alert(`Machine Details:\n\nName: ${machine.name}\nType: ${machine.type}\nPrice: ₹${machine.price}/day\nOwner: ${machine.owner}`);
+            }
+        }
+
+        // Auto-login demo mode (remove in production)
+        // document.getElementById('adminPassword').value = ADMIN_PASSWORD;
+    </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmRent - Signup</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
+        }
+        .container { 
+            background: white; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
+            overflow: hidden; 
+            max-width: 450px; 
+            width: 100%;
+        }
+        .header { 
+            background: linear-gradient(135deg, #2d5a27 0%, #4a7c59 100%); 
+            color: white; 
+            padding: 30px; 
+            text-align: center; 
+        }
+        .form-container { padding: 40px; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
+        input { 
+            width: 100%; padding: 15px; border: 2px solid #e1e5e9; 
+            border-radius: 12px; font-size: 16px; background: #f8f9fa;
+            transition: all 0.3s;
+        }
+        input:focus { outline: none; border-color: #2d5a27; box-shadow: 0 0 0 3px rgba(45,90,39,0.1); }
+        .role-selector { 
+            display: flex; margin-bottom: 25px; background: #f8f9fa; 
+            border-radius: 12px; padding: 5px; 
+        }
+        .role-btn { 
+            flex: 1; padding: 15px; border: none; background: transparent; 
+            border-radius: 8px; font-size: 16px; font-weight: 600; 
+            cursor: pointer; transition: all 0.3s; 
+        }
+        .role-btn.active { background: #2d5a27; color: white; }
+        .submit-btn { 
+            width: 100%; padding: 18px; background: linear-gradient(135deg, #2d5a27 0%, #4a7c59 100%); 
+            color: white; border: none; border-radius: 12px; font-size: 18px; 
+            font-weight: 600; cursor: pointer; transition: all 0.3s;
+        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(45,90,39,0.3); }
+        .status { padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; display: none; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c23; }
+    </style>
+</head>
+<body>
+
+<!-- COMMON NAVBAR -->
+<nav style="background: linear-gradient(135deg, #2d5a27 0%, #4a7c59 100%); padding: 1rem; display: flex; justify-content: space-around; color: white;">
+  <a href="/" style="color: white; text-decoration: none; font-weight: bold;">🏠 Home</a>
+  <a href="/index.html" style="color: white; text-decoration: none;">📍 Map</a>
+  <a href="/signup.html" style="color: white; text-decoration: none;">📝 Signup</a>
+  <a href="/login.html" style="color: white; text-decoration: none;">🔐 Login</a>
+  <a href="/owner.html" style="color: white; text-decoration: none;">👨‍🌾 Owner</a>
+  <a href="/admin.html" style="color: white; text-decoration: none;">⚙️ Admin</a>
+</nav>
+
+
+    <div class="container">
+        <div class="header">
+            <h1>🚜 FarmRent</h1>
+            <p>Join as Owner or Farmer</p>
+        </div>
+        <div class="form-container">
+            <div id="status" class="status"></div>
+            
+            <div class="role-selector">
+                <button class="role-btn active" data-role="farmer">👨‍🌾 Farmer</button>
+                <button class="role-btn" data-role="owner">👨‍💼 Owner</button>
+            </div>
+            
+            <form id="signupForm">
+                <input type="hidden" id="role" value="farmer">
+                
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="fullName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone *</label>
+                    <input type="tel" id="phone" placeholder="9876543210" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="email" placeholder="farmer@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" id="password" minlength="6" required>
+                </div>
+                
+                <button type="submit" class="submit-btn">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Role toggle
+        document.querySelectorAll('.role-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('role').value = btn.dataset.role;
+            });
+        });
+
+        // Form submit
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value
+            };
+            
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = 'status';
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = 'Creating account...';
+            
+            try {
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = '✅ Account created! Redirecting...';
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = '❌ ' + (result.error || 'Signup failed');
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.text

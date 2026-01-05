@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enhanced Farmer Machine Rental Dashboard - Open Source</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #2e7d32;
+            --light-green: #4caf50;
+            --bg-light: #f0f9f0;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, #e8f5e8 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary-green), #4a7c59);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.9);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            min-width: 120px;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        .panel {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        .panel h3 {
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(46,125,50,0.1);
+        }
+        button {
+            background: var(--light-green);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        button:hover {
+            background: var(--primary-green);
+            transform: translateY(-2px);
+        }
+        #map {
+            height: 500px;
+            border-radius: 12px;
+            border: 3px solid var(--primary-green);
+            box-shadow: var(--shadow);
+        }
+        .results {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+        .machine-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-green);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .machine-item:hover {
+            background: #e8f5e8;
+            transform: translateX(5px);
+        }
+        .machine-title {
+            font-weight: bold;
+            color: var(--primary-green);
+            margin-bottom: 0.25rem;
+        }
+        .filter-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .tag {
+            background: var(--light-green);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .legend {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .stats {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1><i class="fas fa-tractor"></i> AgriEquip Rental Dashboard</h1>
+        <p>Advanced platform for farm machinery sharing & location tracking</p>
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalMachines">12</div>
+                <div>Machines</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeBookings">5</div>
+                <div>Bookings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="farmers">28</div>
+                <div>Farmers</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="panel">
+            <h3><i class="fas fa-plus-circle"></i> Add New Equipment</h3>
+            <div class="form-group">
+                <input type="text" id="equipName" placeholder="Equipment Name (e.g., Tractor John Deere)">
+            </div>
+            <div class="form-group">
+                <input type="text" id="equipLocation" placeholder="Location (e.g., Nashik, Maharashtra)">
+            </div>
+            <div class="form-group">
+                <input type="text" id="equipOwner" placeholder="Owner Name">
+            </div>
+            <div class="form-group">
+                <select id="equipType">
+                    <option value="">Select Type</option>
+                    <option value="Tractor">Tractor</option>
+                    <option value="Harvester">Harvester</option>
+                    <option value="Seeder">Seeder</option>
+                    <option value="Plough">Plough</option>
+                    <option value="Irrigation">Irrigation Pump</option>
+                </select>
+            </div>
+            <button onclick="addEquipment()"><i class="fas fa-save"></i> Add Equipment</button>
+
+            <h3 style="margin-top: 2rem;"><i class="fas fa-search"></i> Quick Search</h3>
+            <div class="form-group">
+                <input type="text" id="searchQuery" placeholder="Search by name, city or type...">
+                <select id="filterType">
+                    <option value="all">All Types</option>
+                    <option value="Tractor">Tractor</option>
+                    <option value="Harvester">Harvester</option>
+                </select>
+            </div>
+            <button onclick="performSearch()" style="margin-top: 0.5rem;"><i class="fas fa-filter"></i> Filter & Search</button>
+            <div id="searchResults" class="results"></div>
+        </div>
+
+        <div class="panel">
+            <h3><i class="fas fa-map-marked-alt"></i> Interactive Equipment Map</h3>
+            <div id="map"></div>
+            <div class="filter-tags" id="activeFilters"></div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff6b6b;"></div>
+                    <span>Tractor</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4ecdc4;"></div>
+                    <span>Harvester</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #45b7d1;"></div>
+                    <span>Seeder</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #96ceb4;"></div>
+                    <span>Available</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let equipments = [
+            {name: 'John Deere Tractor 5075E', location: 'Nashik', owner: 'Ramesh Patil', type: 'Tractor', lat: 19.9975, lon: 73.7898, available: true},
+            {name: 'Combine Harvester MH 850', location: 'Pune', owner: 'Suresh Kumar', type: 'Harvester', lat: 18.5204, lon: 73.8567, available: false},
+            {name: 'Seed Drill KS 120', location: 'Ahmednagar', owner: 'Lata Devi', type: 'Seeder', lat: 19.0951, lon: 74.7481, available: true},
+            {name: 'MB Plough Heavy Duty', location: 'Aurangabad', owner: 'Rajesh More', type: 'Plough', lat: 19.8762, lon: 75.3300, available: true}
+        ];
+
+        let map = L.map('map').setView([19.5, 75.0], 8);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        let markers = [];
+        let markerLayer = L.layerGroup().addTo(map);
+
+        const typeColors = {
+            'Tractor': '#ff6b6b',
+            'Harvester': '#4ecdc4',
+            'Seeder': '#45b7d1',
+            'Plough': '#f9ca24',
+            'Irrigation': '#6c5ce7'
+        };
+
+        function updateStats() {
+            document.getElementById('totalMachines').textContent = equipments.length;
+            document.getElementById('activeBookings').textContent = equipments.filter(e => !e.available).length;
+            document.getElementById('farmers').textContent = new Set(equipments.map(e => e.owner)).size;
+        }
+
+        function refreshMap() {
+            markerLayer.clearLayers();
+            markers = [];
+            equipments.forEach((equip, index) => {
+                const color = typeColors[equip.type] || '#96ceb4';
+                const icon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div style="background:${equip.available ? color : '#999'};width:30px;height:30px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 30]
+                });
+                const marker = L.marker([equip.lat, equip.lon], {icon}).addTo(markerLayer);
+                marker.bindPopup(`
+                    <div style="min-width:250px;">
+                        <h4 style="color:var(--primary-green);margin-bottom:0.5rem;">${equip.name}</h4>
+                        <p><strong>Type:</strong> ${equip.type}</p>
+                        <p><strong>Owner:</strong> ${equip.owner}</p>
+                        <p><strong>Location:</strong> ${equip.location}</p>
+                        <p><i class="fas fa-${equip.available ? 'check-circle' : 'times-circle'}"></i> 
+                           <strong>${equip.available ? 'Available' : 'Booked'}</strong></p>
+                        <button onclick="bookEquipment(${index})" style="width:100%;margin-top:0.5rem;background:var(--light-green);color:white;border:none;padding:0.5rem;border-radius:6px;cursor:pointer;">
+                            ${equip.available ? 'Book Now' : 'View Details'}
+                        </button>
+                    </div>
+                `);
+                markers.push(marker);
+            });
+            updateStats();
+        }
+
+        function addEquipment() {
+            const name = document.getElementById('equipName').value.trim();
+            const location = document.getElementById('equipLocation').value.trim();
+            const owner = document.getElementById('equipOwner').value.trim();
+            const type = document.getElementById('equipType').value;
+            if (!name || !location || !owner || !type) {
+                alert('Please fill all fields.');
+                return;
+            }
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        alert('Location not found.');
+                        return;
+                    }
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    const newEquip = {name, location, owner, type, lat, lon, available: true};
+                    equipments.push(newEquip);
+                    refreshMap();
+                    document.getElementById('equipName').value = '';
+                    document.getElementById('equipLocation').value = '';
+                    document.getElementById('equipOwner').value = '';
+                    document.getElementById('equipType').value = '';
+                    alert('Equipment added successfully!');
+                }).catch(() => alert('Geocoding failed.'));
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchQuery').value.toLowerCase();
+            const typeFilter = document.getElementById('filterType').value;
+            const filtered = equipments.filter(e => 
+                (e.name.toLowerCase().includes(query) || e.location.toLowerCase().includes(query) || e.type.toLowerCase().includes(query)) &&
+                (typeFilter === 'all' || e.type === typeFilter)
+            );
+            displayResults(filtered);
+        }
+
+        function displayResults(results) {
+            const container = document.getElementById('searchResults');
+            if (results.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:#999;">No equipment found.</p>';
+                return;
+            }
+            container.innerHTML = results.map((e, i) => `
+                <div class="machine-item" onclick="map.flyTo([${e.lat}, ${e.lon}], 12)">
+                    <div class="machine-title">${e.name}</div>
+                    <div><i class="fas fa-tag"></i> ${e.type} | ${e.location}</div>
+                    <div><i class="fas fa-user"></i> ${e.owner} | 
+                        <span style="color:${e.available ? '#4caf50' : '#f44336'}">
+                            <i class="fas fa-${e.available ? 'check-circle' : 'clock'}"></i> ${e.available ? 'Available' : 'Booked'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function bookEquipment(index) {
+            if (!equipments[index].available) {
+                alert('Already booked. Contact owner for details.');
+                return;
+            }
+            equipments[index].available = false;
+            refreshMap();
+            alert('Booking request sent! Owner will contact you.');
+        }
+
+        // Initialize
+        refreshMap();
+        displayResults(equipments);
+    </script>
+</body>
+</html>

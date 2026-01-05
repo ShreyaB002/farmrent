@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FarmRent | Rent Farm Equipment Easily</title>
+  <meta name="description" content="FarmRent connects farmers and equipment owners for easy and affordable farm machinery rental." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #1b5e20;
+      --primary-light: #4caf50;
+      --accent: #ffc107;
+      --bg: #f5f5f5;
+      --text: #222;
+      --muted: #666;
+      --white: #fff;
+      --danger: #c62828;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* Layout helpers */
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+      text-decoration: none;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary:hover {
+      background: #144219;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      color: var(--white);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.12);
+      color: #e8f5e9;
+      gap: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      background: rgba(27, 94, 32, 0.08);
+      color: var(--primary);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+      background: rgba(245, 245, 245, 0.92);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      gap: 20px;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #a5d6a7, #1b5e20);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .brand-name {
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      font-size: 1.05rem;
+    }
+
+    .brand-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: -2px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .nav-links a {
+      position: relative;
+      padding-bottom: 2px;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 0;
+      height: 2px;
+      background: var(--primary);
+      transition: width 0.2s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-auth {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .nav-auth a {
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    /* Mobile nav */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .nav-toggle span {
+      width: 18px;
+      height: 2px;
+      background: #333;
+      border-radius: 999px;
+    }
+
+    /* Hero */
+    .hero {
+      background: radial-gradient(circle at top left, #e8f5e9, #f5f5f5);
+      padding: 40px 0 32px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.6fr);
+      gap: 40px;
+      align-items: center;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 3.1vw, 2.7rem);
+      line-height: 1.15;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-title span {
+      color: var(--primary);
+    }
+
+    .hero-subtitle {
+      font-size: 0.95rem;
+      color: var(--muted);
+      max-width: 460px;
+      margin-bottom: 18px;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .hero-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-meta strong {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .hero-right {
+      position: relative;
+    }
+
+    .hero-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .hero-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .hero-card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .hero-card-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .pill-switch {
+      display: inline-flex;
+      border-radius: 999px;
+      background: #f1f8e9;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .pill-switch button {
+      border: none;
+      background: transparent;
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .pill-switch button.active {
+      background: var(--white);
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      font-weight: 500;
+    }
+
+    .hero-form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 0.8rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field select {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      font-size: 0.78rem;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 1px rgba(76, 175, 80, 0.1);
+    }
+
+    .hero-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .hero-card-note {
+      font-size: 0.7rem;
+      color: var(--muted);
+      max-width: 160px;
+    }
+
+    .hero-stats {
+      position: absolute;
+      right: -8px;
+      bottom: -28px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.72rem;
+    }
+
+    .hero-stat-card {
+      background: var(--white);
+      padding: 8px 12px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      min-width: 160px;
+    }
+
+    .hero-stat-label {
+      color: var(--muted);
+      font-size: 0.7rem;
+    }
+
+    .hero-stat-value {
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .hero-stat-value span {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+
+    .hero-stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      font-size: 0.7rem;
+      color: var(--primary);
+    }
+
+    .hero-badge {
+      position: absolute;
+      left: -8px;
+      bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(27, 94, 32, 0.96);
+      color: #e8f5e9;
+      font-size: 0.7rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    .hero-badge span {
+      font-weight: 600;
+      color: #c8e6c9;
+    }
+
+    /* Features */
+    .section {
+      padding: 32px 0;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .section-title-wrap h2 {
+      font-size: 1.3rem;
+      margin-bottom: 4px;
+    }
+
+    .section-title-wrap p {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .section-link {
+      font-size: 0.8rem;
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+      font-size: 0.85rem;
+    }
+
+    .feature-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      background: #e8f5e9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .feature-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+
+    .feature-text {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* Equipment list */
+    .equipment-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      font-size: 0.82rem;
+    }
+
+    .equipment-card {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      padding: 8px 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .equipment-name {
+      font-weight: 500;
+      font-size: 0.86rem;
+    }
+
+    .equipment-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.74rem;
+      color: var(--muted);
+    }
+
+    .equipment-price {
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 0.84rem;
+    }
+
+    .equipment-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .equipment-footer button {
+      font-size: 0.75rem;
+      padding: 6px 10px;
+    }
+
+    .rating {
+      font-size: 0.7rem;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .rating span {
+      color: #f9a825;
+    }
+
+    /* How it works */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      font-size: 0.82rem;
+    }
+
+    .step-card {
+      background: #f9fafb;
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px dashed rgba(0, 0, 0, 0.08);
+    }
+
+    .step-label {
+      font-size: 0.72rem;
+      color: var(--primary);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .step-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+
+    .step-text {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    /* CTA strip */
+    .cta-strip {
+      background: linear-gradient(135deg, #1b5e20, #4caf50);
+      border-radius: 18px;
+      padding: 16px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      color: var(--white);
+      margin-top: 10px;
+    }
+
+    .cta-strip h3 {
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .cta-strip p {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .cta-strip-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* Footer */
+    footer {
+      padding: 20px 0 24px;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .footer-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 26px;
+      }
+
+      .hero-right {
+        order: -1;
+      }
+
+      .features-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .equipment-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .steps-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .hero-stats {
+        position: static;
+        margin-top: 10px;
+        flex-direction: row;
+      }
+
+      .hero-badge {
+        bottom: -16px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav-links {
+        display: none;
+      }
+
+      .nav-toggle {
+        display: flex;
+      }
+
+      .nav-right {
+        display: none;
+      }
+
+      .equipment-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .steps-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cta-strip {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .features-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .equipment-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .steps-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-card {
+        padding: 14px 12px;
+      }
+
+      .hero-badge {
+        position: static;
+        margin-top: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <header>
+    <div class="container">
+      <nav class="nav">
+        <div class="nav-left">
+          <div class="logo-circle">FR</div>
+          <div>
+            <div class="brand-name">FarmRent</div>
+            <div class="brand-sub">Farm equipment rentals</div>
+          </div>
+        </div>
+
+        <div class="nav-links">
+          <a href="#equipment">Equipment</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#owners">For owners</a>
+          <a href="#contact">Support</a>
+        </div>
+
+        <div class="nav-right">
+          <div class="nav-auth">
+            <span>Have an account?</span>
+            <a href="login">Log in</a>
+          </div>
+          <a href="signup" class="btn btn-primary" style="font-size: 0.8rem; padding: 8px 16px;">Sign up</a>
+        </div>
+
+        <button class="nav-toggle" aria-label="Open menu">
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <!-- Left -->
+        <div>
+          <div class="hero-eyebrow">
+            <span class="tag">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background:#c8e6c9;"></span>
+              Live in Haryana, Punjab & UP
+            </span>
+            <span class="badge">New: Multi-language support</span>
+          </div>
+
+          <h1 class="hero-title">
+            Rent <span>farm equipment</span> in minutes, not weeks.
+          </h1>
+
+          <p class="hero-subtitle">
+            FarmRent connects nearby equipment owners and smallholder farmers for fast, transparent and affordable tractor and implement rentals.
+          </p>
+
+          <div class="hero-cta">
+            <a href="owner" class="btn btn-primary">
+              Find equipment
+              <span>→</span>
+            </a>
+            <a href="map" class="btn btn-outline">
+              List your tractor
+            </a>
+            <a href="admin">Admin</a>
+            
+          </div>
+
+          <div class="hero-meta">
+            <span>
+              <strong>3,200+</strong> bookings completed
+            </span>
+            <span>
+              <strong>4.8/5</strong> average farmer rating
+            </span>
+            <span>
+              Up to <strong>30%</strong> cheaper than market
+            </span>
+          </div>
+        </div>
+
+        <!-- Right: search card -->
+        <div class="hero-right">
+          <div class="hero-card">
+            <div class="hero-card-header">
+              <div>
+                <div class="hero-card-title">Search available equipment</div>
+                <div class="hero-card-sub">Check real-time availability near your village</div>
+              </div>
+              <div class="pill-switch">
+                <button class="active" type="button">Farmer</button>
+                <button type="button">Owner</button>
+              </div>
+            </div>
+
+            <form class="hero-form" onsubmit="event.preventDefault(); alert('Hook this form to your backend / API');">
+              <div class="field">
+                <label for="village">Village or PIN code</label>
+                <input id="village" name="village" type="text" placeholder="e.g. Narnaund, 125039" required />
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="equipment-type">Equipment</label>
+                  <select id="equipment-type" name="equipmentType" required>
+                    <option value="">Select equipment</option>
+                    <option value="tractor">Tractor</option>
+                    <option value="rotavator">Rotavator</option>
+                    <option value="cultivator">Cultivator</option>
+                    <option value="harvester">Combine harvester</option>
+                    <option value="sprayer">Boom sprayer</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="date">Date</label>
+                  <input id="date" name="date" type="date" required />
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="hours">Duration (hours)</label>
+                  <input id="hours" name="hours" type="number" min="1" max="24" value="4" />
+                </div>
+                <div class="field">
+                  <label for="budget">Budget (₹ / hr)</label>
+                  <input id="budget" name="budget" type="number" min="0" placeholder="e.g. 700" />
+                </div>
+              </div>
+
+              <div class="hero-card-footer">
+                <button type="submit" class="btn btn-primary" style="width: 52%; font-size: 0.8rem;">
+                  Search equipment
+                </button>
+                <p class="hero-card-note">
+                  No advance payment required. Pay directly to owner after work.
+                </p>
+              </div>
+            </form>
+          </div>
+
+          <div class="hero-stats">
+            <div class="hero-stat-card">
+              <div class="hero-stat-label">This week</div>
+              <div class="hero-stat-value">
+                127 hours rented
+                <span>near you</span>
+              </div>
+              <div class="hero-stat-pill">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background:#4caf50;"></span>
+                Live demand updated
+              </div>
+            </div>
+
+            <div class="hero-stat-card">
+              <div class="hero-stat-label">Popular now</div>
+              <div class="hero-stat-value">
+                Rotavator, 40&nbsp;HP+
+              </div>
+              <div class="hero-stat-pill">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background:#ffc107;"></span>
+                Rabi season bookings
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-badge">
+            <span>₹80+ lakh</span> earned by equipment owners so far
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" id="owners">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2>Why farmers use FarmRent</h2>
+            <p>Transparent pricing, verified owners and reliable machines for every season.</p>
+          </div>
+          <a href="#signup" class="section-link">
+            Become an owner
+            <span>→</span>
+          </a>
+        </div>
+
+        <div class="features-grid">
+          <article class="feature-card">
+            <div class="feature-icon">₹</div>
+            <h3 class="feature-title">Fair hourly rates</h3>
+            <p class="feature-text">
+              Compare multiple owners and choose the best rate for your land size and crop without endless phone calls.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">★</div>
+            <h3 class="feature-title">Verified machines</h3>
+            <p class="feature-text">
+              See ratings, photos and last service date before booking so you know exactly what is coming to your field.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">📍</div>
+            <h3 class="feature-title">Nearby operators</h3>
+            <p class="feature-text">
+              Get matched with tractor owners within 5–25 km of your village to reduce transport time and fuel cost.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">⌛</div>
+            <h3 class="feature-title">Instant booking</h3>
+            <p class="feature-text">
+              Select date, time and hours; owners confirm from their app so your slot is locked before labour arrives.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h3 class="feature-title">Full-season support</h3>
+            <p class="feature-text">
+              From land prep to harvesting, plan all operations through one platform and avoid last-minute rush.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3 class="feature-title">Secure payments</h3>
+            <p class="feature-text">
+              Record hours, fares and dues digitally so both farmer and owner have a clear summary of each job.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Equipment -->
+    <section class="section" id="equipment">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2>Popular equipment near you</h2>
+            <p>Sample data you can later replace with dynamic cards from your backend.</p>
+          </div>
+          <a href="#equipment" class="section-link">
+            View all equipment
+            <span>→</span>
+          </a>
+        </div>
+
+        <div class="equipment-grid">
+          <article class="equipment-card">
+            <div class="equipment-name">45 HP Tractor + Rotavator</div>
+            <div class="equipment-meta">
+              <span>Narnaund · 6 km</span>
+              <span class="badge">Today 4 PM</span>
+            </div>
+            <div class="equipment-footer">
+              <div>
+                <div class="equipment-price">₹850 / hour</div>
+                <div class="rating">
+                  <span>★</span> 4.9 · 62 jobs
+                </div>
+              </div>
+              <button class="btn btn-primary" type="button">Book</button>
+            </div>
+          </article>
+
+          <article class="equipment-card">
+            <div class="equipment-name">35 HP Tractor + Cultivator</div>
+            <div class="equipment-meta">
+              <span>Hansi · 12 km</span>
+              <span class="badge">Free after 11 AM</span>
+            </div>
+            <div class="equipment-footer">
+              <div>
+                <div class="equipment-price">₹700 / hour</div>
+                <div class="rating">
+                  <span>★</span> 4.7 · 41 jobs
+                </div>
+              </div>
+              <button class="btn btn-primary" type="button">Book</button>
+            </div>
+          </article>
+
+          <article class="equipment-card">
+            <div class="equipment-name">Combine Harvester</div>
+            <div class="equipment-meta">
+              <span>Hisar · 24 km</span>
+              <span class="badge">Rabi slots open</span>
+            </div>
+            <div class="equipment-footer">
+              <div>
+                <div class="equipment-price">₹4,500 / acre</div>
+                <div class="rating">
+                  <span>★</span> 4.8 · 29 jobs
+                </div>
+              </div>
+              <button class="btn btn-primary" type="button">Book</button>
+            </div>
+          </article>
+
+          <article class="equipment-card">
+            <div class="equipment-name">Boom Sprayer</div>
+            <div class="equipment-meta">
+              <span>Barwala · 18 km</span>
+              <span class="badge">Tomorrow</span>
+            </div>
+            <div class="equipment-footer">
+              <div>
+                <div class="equipment-price">₹550 / hour</div>
+                <div class="rating">
+                  <span>★</span> 4.6 · 15 jobs
+                </div>
+              </div>
+              <button class="btn btn-primary" type="button">Book</button>
+            </div>
+          </article>
+        </div>
+
+        <div class="cta-strip">
+          <div>
+            <h3>Own a tractor or implement?</h3>
+            <p>
+              List your machine for free, set your own rates and get verified booking requests directly from nearby farmers.
+            </p>
+          </div>
+          <div class="cta-strip-actions">
+            <a href="#signup" class="btn btn-outline">Start earning</a>
+            <a href="#contact" class="btn btn-primary">Talk to our team</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section" id="how-it-works">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2>How FarmRent works</h2>
+            <p>Simple flow for both farmers and equipment owners.</p>
+          </div>
+        </div>
+
+        <div class="steps-grid">
+          <article class="step-card">
+            <div class="step-label">Step 1</div>
+            <h3 class="step-title">Create your account</h3>
+            <p class="step-text">
+              Sign up as farmer or owner using your mobile number and verify with OTP to keep accounts secure.
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-label">Step 2</div>
+            <h3 class="step-title">Post or request a job</h3>
+            <p class="step-text">
+              Farmers share land details and required work; owners list available machines with photos and prices.
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-label">Step 3</div>
+            <h3 class="step-title">Complete work and pay</h3>
+            <p class="step-text">
+              Track working hours, confirm completion and settle payment directly or through digital options.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact / footer CTA -->
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2>Need help or a custom demo?</h2>
+            <p>Perfect for FPOs, custom hiring centers and agri startups.</p>
+          </div>
+        </div>
+
+        <div class="cta-strip">
+          <div>
+            <h3>Integrate FarmRent with your village or FPO</h3>
+            <p>
+              Use our API or WhatsApp bot to automate booking requests, reminders and payment summaries for your members.
+            </p>
+          </div>
+          <div class="cta-strip-actions">
+            <a href="mailto:hello@farmrent.in" class="btn btn-outline">Email us</a>
+            <a href="tel:+919999999999" class="btn btn-primary">Call support</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <div class="brand-name">FarmRent</div>
+        <p>Connecting farmers and equipment owners for smarter, affordable mechanization.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#terms">Terms</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#owners">For owners</a>
+        <a href="#equipment">Find equipment</a>
+      </div>
+      <div>
+        <span>© <span id="year"></span> FarmRent. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Simple year update
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
